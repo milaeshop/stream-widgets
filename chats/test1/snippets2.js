@@ -1,6 +1,5 @@
 let counterEmotes = 0;
 
-
 function addEventBlock(name, text, title) {
   return `<div class="alertcont">  
    <div class="alerttext">    
@@ -507,7 +506,7 @@ let pronounsText = "";
 
 
    async function onChatLoad(fData) {
-      console.log("load 1.1")
+      console.log("load 1.2!!")
  if (fData.editsMode) {
     let queuearr = [];
     for (let i = 0; i < testarr.length; i++) {
