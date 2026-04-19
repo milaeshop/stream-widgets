@@ -37,7 +37,7 @@ ${badges}</div>`;
      <div class="decorcont">
       </div>
        <div class="message">
-     ${message}
+     ${message} version 1.6
      </div> 
      </div>
      </div>
