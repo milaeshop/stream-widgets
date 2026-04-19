@@ -16,7 +16,6 @@ function addFollowerBlock(name) {
 </div>`
 }
 
-
   let testmsg = null;
   /*async*/ function addMessage(username, badges, message, uid, msgId, userType, emoteOnly, replyBody = "", subTierIndicator, extraDecor, specialclass) {
     totalMessages += 1;
@@ -506,7 +505,7 @@ let pronounsText = "";
 
 
    async function onChatLoad(fData) {
-      console.log("load 1.2!!")
+      console.log("load 1.6!!")
  if (fData.editsMode) {
     let queuearr = [];
     for (let i = 0; i < testarr.length; i++) {
