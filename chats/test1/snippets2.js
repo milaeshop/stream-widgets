@@ -340,7 +340,7 @@ function composeMessageText(data, specialclass) {
     let text = data.text;
     gifs.sort((a, b) => b.start - a.start);
     gifs.forEach((g, i) => {
-      const token = `GIF${i}`;
+      const token = `\uE000GIF${i}\uE000`;
       text = text.slice(0, g.start) + token + text.slice(g.end + 1);
       gifMap[token] = g.gifUrl;
     });
