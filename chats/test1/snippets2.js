@@ -1303,6 +1303,7 @@ function testRaidEvent(usrname) {
   };
 }
 
+
 let queue = {
   streamer: [gettestMessage(), "msg"],
   bot: [testMessageBot(), "msg"],
