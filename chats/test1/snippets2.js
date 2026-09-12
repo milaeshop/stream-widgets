@@ -83,7 +83,7 @@ async function processEvent(obj, fData) {
   // (e.g. no artist styling) just normalizes it away in its OWN
   // addMessage() — see the comment there — instead of this file needing
   // per-widget config.
-  const role = resolveUserRole(tags, data.badges);
+  const role = resolveUserRole(tags, data.badges, data.nick);
   userType = role.userType; // keep the legacy global in sync, some widgets' CSS/main.js may still read it
 
   const { message, emoteOnly } = composeMessageText(data, role.specialclass);
@@ -263,7 +263,7 @@ function roleActive(role) {
   return typeof activeRoles === 'undefined' || activeRoles.includes(role);
 }
 
-function resolveUserRole(tags, badgeList) {
+function resolveUserRole(tags, badgeList, nick) {
   let userTypeLocal = "default";
   let badgesHtml = "", badge;
   let specialclass = "";
@@ -275,9 +275,7 @@ function resolveUserRole(tags, badgeList) {
   if (roleActive("mod") && tags.mod === "1") userTypeLocal = "mod";
   if (roleActive("vip") && tags.vip === "1") userTypeLocal = "vip";
   
-    if (data.nick && bots.indexOf(data.nick.toLowerCase()) !== -1) {
-      userType = "bot"
-    }
+  if (roleActive("bot") && nick && bots.indexOf(nick.toLowerCase()) !== -1) userTypeLocal = "bot";
 
   for (let i = 0; i < badgeList.length; i++) {
     badge = badgeList[i];
