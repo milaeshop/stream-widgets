@@ -300,13 +300,14 @@ function resolveUserRole(tags, badgeList) {
   }
 
  // subTierIndicator = `<span class="tier role">${userTypeLocal}</span>`;
-//  if (userTypeLocal === "streamer") subTierIndicator = `<span class="tier role">LIVE</span>`;
+  
   if (subIndicator) {
     const searchSub = tags.badges;
     if (tier2find.test(searchSub)) subTierIndicator = t2nameb;
     if (tier3find.test(searchSub)) subTierIndicator = t3nameb;
   }
 
+  if (userTypeLocal === "streamer") subTierIndicator = t2namest;
   if (roleActive("highlighted") && tags["msg-id"] == "highlighted-message") { userTypeLocal = "highlighted" }
   if (roleActive("powerup") && tags["msg-id"] == "animated-message") {specialclass = "powerup";}
   if (tags["msg-id"] === "gigantified-emote-message") specialclass = "gigant";
