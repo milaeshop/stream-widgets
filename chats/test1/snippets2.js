@@ -252,6 +252,17 @@ function handlePointRedemption(obj) {
 // every widget. If a widget doesn't support a role this produces (e.g.
 // no artist styling), it normalizes userType away in its OWN addMessage,
 // not here.
+// Per-widget role gate. `activeRoles` is declared in each widget's main.js
+// and lists the roles / message states that widget actually has styling for.
+// It is checked BEFORE each assignment, never after: a role the widget does
+// not support is simply never applied, so whatever was resolved before it
+// survives — an artist-badged subscriber still renders as `sub` in a widget
+// with no artist style, and a mod's highlighted message stays `mod`.
+// A widget that declares no array gets every role, so nothing breaks.
+function roleActive(role) {
+  return typeof activeRoles === 'undefined' || activeRoles.includes(role);
+}
+
 function resolveUserRole(tags, badgeList) {
   let userTypeLocal = "default";
   let badgesHtml = "", badge;
@@ -260,9 +271,9 @@ function resolveUserRole(tags, badgeList) {
   const tier3findB = /3\d\d\d/, tier2findB = /2\d\d\d/;
   const tier3find = /subscriber\/3\d\d\d/, tier2find = /subscriber\/2\d\d\d/;
 
-  if (tags.subscriber === "1") userTypeLocal = "sub";
-  if (tags.mod === "1") userTypeLocal = "mod";
-  if (tags.vip === "1") userTypeLocal = "vip";
+  if (roleActive("sub") && tags.subscriber === "1") userTypeLocal = "sub";
+  if (roleActive("mod") && tags.mod === "1") userTypeLocal = "mod";
+  if (roleActive("vip") && tags.vip === "1") userTypeLocal = "vip";
   /*
     if (data.nick && bots.indexOf(data.nick.toLowerCase()) !== -1) {
       userType = "bot"
@@ -270,32 +281,34 @@ function resolveUserRole(tags, badgeList) {
 
   for (let i = 0; i < badgeList.length; i++) {
     badge = badgeList[i];
-    if (badge.type === "broadcaster") userTypeLocal = "streamer";
-    if (badge.type === "lead_moderator") userTypeLocal = "mod";
+    if (roleActive("streamer") && badge.type === "broadcaster") userTypeLocal = "streamer";
+    if (roleActive("mod") && badge.type === "lead_moderator") userTypeLocal = "mod";
     if (badge.type === "subscriber") {
       subIndicator = true;
       if (tier3findB.test(badge['version'])) subTierIndicator = t3nameb;
       if (tier2findB.test(badge['version'])) subTierIndicator = t2nameb;
     }
-    /*
-    if (badge.type === "artist-badge") {
-     userType = "artist";
+
+    if (roleActive("artist") && badge.type === "artist-badge") {
+     userTypeLocal = "artist";
   }
-     if (badge.type === "bot-badge") {
-    userType = "bot";
+     if (roleActive("bot") && badge.type === "bot-badge") {
+    userTypeLocal = "bot";
   }
-    */
+
     badgesHtml += `<div class="${badge.type} custombadge"><img alt="" src="${badge.url}" class="badge2"></div>`;
   }
 
-  subTierIndicator = `<span class="tier role">${userTypeLocal}</span>`;
-  if (userTypeLocal === "streamer") subTierIndicator = `<span class="tier role">LIVE</span>`;
+ // subTierIndicator = `<span class="tier role">${userTypeLocal}</span>`;
+//  if (userTypeLocal === "streamer") subTierIndicator = `<span class="tier role">LIVE</span>`;
   if (subIndicator) {
     const searchSub = tags.badges;
     if (tier2find.test(searchSub)) subTierIndicator = t2nameb;
     if (tier3find.test(searchSub)) subTierIndicator = t3nameb;
   }
 
+  if (roleActive("highlighted") && tags["msg-id"] == "highlighted-message") { userTypeLocal = "highlighted" }
+  if (roleActive("powerup") && tags["msg-id"] == "animated-message") {specialclass = "powerup";}
   if (tags["msg-id"] === "gigantified-emote-message") specialclass = "gigant";
 
   /*
