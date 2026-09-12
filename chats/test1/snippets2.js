@@ -274,10 +274,10 @@ function resolveUserRole(tags, badgeList) {
   if (roleActive("sub") && tags.subscriber === "1") userTypeLocal = "sub";
   if (roleActive("mod") && tags.mod === "1") userTypeLocal = "mod";
   if (roleActive("vip") && tags.vip === "1") userTypeLocal = "vip";
-  /*
+  
     if (data.nick && bots.indexOf(data.nick.toLowerCase()) !== -1) {
       userType = "bot"
-    }*/
+    }
 
   for (let i = 0; i < badgeList.length; i++) {
     badge = badgeList[i];
@@ -299,17 +299,17 @@ function resolveUserRole(tags, badgeList) {
     badgesHtml += `<div class="${badge.type} custombadge"><img alt="" src="${badge.url}" class="badge2"></div>`;
   }
 
- // subTierIndicator = `<span class="tier role">${userTypeLocal}</span>`;
-  
   if (subIndicator) {
     const searchSub = tags.badges;
     if (tier2find.test(searchSub)) subTierIndicator = t2nameb;
     if (tier3find.test(searchSub)) subTierIndicator = t3nameb;
   }
-
   if (userTypeLocal === "streamer") subTierIndicator = t2namest;
+
   if (roleActive("highlighted") && tags["msg-id"] == "highlighted-message") { userTypeLocal = "highlighted" }
-  if (roleActive("powerup") && tags["msg-id"] == "animated-message") {specialclass = "powerup";}
+  if (roleActive("powerup") && tags["msg-id"] == "animated-message") {
+    userTypeLocal = "highlighted";
+    specialclass = "powerup";}
   if (tags["msg-id"] === "gigantified-emote-message") specialclass = "gigant";
 
   /*
