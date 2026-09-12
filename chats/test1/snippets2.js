@@ -340,7 +340,7 @@ function composeMessageText(data, specialclass) {
     let text = data.text;
     gifs.sort((a, b) => b.start - a.start);
     gifs.forEach((g, i) => {
-      const token = `\uE000GIF${i}\uE000`;
+      const token = `GIF${i}`;
       text = text.slice(0, g.start) + token + text.slice(g.end + 1);
       gifMap[token] = g.gifUrl;
     });
@@ -425,7 +425,7 @@ function msgDiv(message, spclass) {
       nonEmoteParts.push(tokens[i]);
     }
   }
-  let notext = nonEmoteParts.join(" ").replace(/\p{C}/gu, '').replace(/\u034F/g, "").trim();
+  let notext = nonEmoteParts.join(" ").replace(/\p{C}/gu, '').replace(/͏/g, "").trim();
   let emoteOnly = notext === "";
 
   let out = [];
@@ -537,6 +537,10 @@ function showMsgs(delay, delmsg, speedA, arrr) {
   }
 }
 
+
+/* ---------------------------------------------------------------------
+   BADGES (SVG injection)
+--------------------------------------------------------------------- */
 
 function replaceBadges(badges, el) {
   if (badges != "" && fieldData.badgesDisplay) {
@@ -1302,7 +1306,6 @@ function testRaidEvent(usrname) {
     }
   };
 }
-
 
 let queue = {
   streamer: [gettestMessage(), "msg"],
