@@ -1217,7 +1217,7 @@ function testSubEvent(usrname) {
         name: usrname,
         tier: "3000",
         amount: `10`,
-        message: `Hi, I just resubscribed! Love you streamer`
+        message: `Hi, I just resubscribed!`
       },
     }
   };
@@ -1229,7 +1229,7 @@ function testCheerEvent(usrname) {
       listener: "cheer-latest", event: {
         name: usrname,
         amount: `10000`,
-        message: `Cheers for streamer Kappa Cheers for streamer Kappa Cheers for streamer Kappa Cheers for streamer Kappa Cheers for streamer Kappa `
+        message: ``
       },
     }
   };
