@@ -1127,7 +1127,7 @@ function testMessageFirst() {
         "tags": {
           "badges": "",
           "color": "#b22222",
-          "first-msg": "1",
+          "first-msg": "0",
           "userId": "100998119"
         },
         "userId": "100995119",
