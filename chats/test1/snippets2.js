@@ -233,11 +233,6 @@ function filterDuplicateActivity(type, event, obj, fData) {
   return false;
 }
 
-// Twitch channel-points redemptions. Mechanically the same for every
-// widget (pull the fields, call redeemAlert), so it lives here — but
-// whether it ever gets called is each widget's own call, from main.js:
-//   if (fieldData.redeems) handlePointRedemption(obj);
-// inside that widget's onEventReceived listener, BEFORE processEvent().
 function handlePointRedemption(obj) {
   const redemptionData = obj.detail.event.data;
   const redUser = redemptionData.username;
@@ -247,18 +242,6 @@ function handlePointRedemption(obj) {
   if (redCost >= redeemShow) redeemAlert(redUser, redTitle, redCost, redMessage);
 }
 
-// Turns raw Twitch tags + badge list into { userType, badgesHtml,
-// subTierIndicator, specialclass }. Mutual — identical mechanics for
-// every widget. If a widget doesn't support a role this produces (e.g.
-// no artist styling), it normalizes userType away in its OWN addMessage,
-// not here.
-// Per-widget role gate. `activeRoles` is declared in each widget's main.js
-// and lists the roles / message states that widget actually has styling for.
-// It is checked BEFORE each assignment, never after: a role the widget does
-// not support is simply never applied, so whatever was resolved before it
-// survives — an artist-badged subscriber still renders as `sub` in a widget
-// with no artist style, and a mod's highlighted message stays `mod`.
-// A widget that declares no array gets every role, so nothing breaks.
 function roleActive(role) {
   return typeof activeRoles === 'undefined' || activeRoles.includes(role);
 }
@@ -303,13 +286,20 @@ function resolveUserRole(tags, badgeList, nick) {
     if (tier3find.test(searchSub)) subTierIndicator = t3nameb;
   }
   if (userTypeLocal === "streamer") subTierIndicator = t2namest;
+  
+
 
   if (roleActive("highlighted") && tags["msg-id"] == "highlighted-message") { userTypeLocal = "highlighted" }
   if (roleActive("powerup") && tags["msg-id"] == "animated-message") {
     userTypeLocal = "highlighted";
-    specialclass = "powerup";}
+    specialclass = "powerup";
+  }
   if (tags["msg-id"] === "gigantified-emote-message") specialclass = "gigant";
 
+  if (tags["first-msg"] == "1") {
+      extraDecor += firstChatDec;
+      specialclass = "firsttime";
+};
   /*
   let badgetag = "";
 
