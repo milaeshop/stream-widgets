@@ -75,7 +75,6 @@ async function processEvent(obj, fData) {
     }
   }
 
-  let extraDecor = "";
   const tags = data.tags;
 
   // Mutual: badge/tier/userType detection is identical mechanics for
@@ -85,16 +84,14 @@ async function processEvent(obj, fData) {
   // per-widget config.
   const role = resolveUserRole(tags, data.badges, data.nick);
   userType = role.userType; // keep the legacy global in sync, some widgets' CSS/main.js may still read it
-
+console.log(role)
   const { message, emoteOnly } = composeMessageText(data, role.specialclass);
 
   // Individual: not every widget shows reply context, so main.js decides.
   const replyBody = buildReplyBody(tags);
-
-  console.log(2, extraDecor)
   /*  await */ addMessage(
     fData, data.nick, username, role.badgesHtml, message, data.userId, data.msgId,
-    role.userType, emoteOnly, replyBody, role.subTierIndicator, extraDecor, role.specialclass
+    role.userType, emoteOnly, replyBody, role.subTierIndicator, role.extraDecor, role.specialclass
   );
 
   attachPronouns(data, fData);
@@ -249,6 +246,7 @@ function roleActive(role) {
 
 function resolveUserRole(tags, badgeList, nick) {
   let userTypeLocal = "default";
+  let extraDecor = "";
   let badgesHtml = "", badge;
   let specialclass = "";
   let subTierIndicator = "", subIndicator = false;
@@ -330,7 +328,7 @@ function resolveUserRole(tags, badgeList, nick) {
   }
   */
 
-  return { userType: userTypeLocal, badgesHtml, subTierIndicator, specialclass, subIndicator };
+  return { userType: userTypeLocal, badgesHtml, subTierIndicator, specialclass, subIndicator, extraDecor };
 }
 
 // GIF tokens (Giphy etc, via data.tags.gifs) + emote lookup (msgDiv) +
