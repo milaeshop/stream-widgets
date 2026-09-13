@@ -911,7 +911,7 @@ function testMessageVip() {
       event: {
         data: {
           tags: {
-            badges: "vip/1,subscriber/3000,no_audio/1",
+            badges: "vip/1,subscriber/1,no_audio/1",
             color: "#ff69b4",
             vip: "1",
             subscriber: "0",
