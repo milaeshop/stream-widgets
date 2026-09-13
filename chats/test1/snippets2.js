@@ -45,6 +45,10 @@
 
 let counterEmotes = 0;
 let testmsg = null;
+let t3nameb = ``;
+let t2nameb = ``;
+let t2namest = ``;
+let firstChatDec = ``;
 
 async function processEvent(obj, fData) {
   if (handleTestButtonEvent(obj)) return;
