@@ -1,47 +1,4 @@
-/* =============================================================================
-   SHARED WIDGET SNIPPETS
-   Host this ONE file (GitHub + jsDelivr, or any static host) and load it
-   dynamically from the top of each widget's JS tab (see main.template.js
-   for the loader — StreamElements doesn't guarantee HTML-tab <script src>
-   tags run before JS-tab code, so we don't rely on tag order at all).
-   Editing this file and pushing the update makes the change live in every
-   widget that loads it — fix the giant-emote hidden-character bug once,
-   add the Giphy/GIF feature once, and it's live everywhere instead of
-   copy-pasting into N widget folders.
 
-   WHAT BELONGS HERE vs main.js
-   -----------------------------------------------------------------------
-   HERE (mutual — identical for every widget):
-     - event plumbing: processEvent() and its helpers
-     - badge/emote/gif/message parsing (resolveUserRole, composeMessageText,
-       msgDiv, parseGifs, html_encode)
-     - anything that talks to an outside API (get, getEmotes, getPronouns,
-       getUserPronoun)
-     - the test-button / fake-event generators used by the playground
-     - queueing/animation helpers (ShowVert, ShowHor, LimitMsg, showMsgs)
-
-   main.js (individual, one copy per widget — this is where the DESIGN lives):
-     - addMessage / addEventBlock / addFollowerBlock / redeemAlert — the
-       HTML each widget actually renders
-     - ProcessEvents — decides what alert markup to build for a sub/tip/
-       cheer/follow/raid, using addEventBlock/addFollowerBlock above
-     - buildReplyBody — not every widget shows reply context, so this is
-       per-widget; return "" if this widget doesn't do replies
-     - handlePointRedemption's CALL SITE — gated on fieldData.redeems,
-       from this widget's onEventReceived listener (the function itself
-       lives below since the mechanics are the same for every widget)
-     - onWidgetLoad — per-widget init (fieldData, classes, fonts, etc.)
-
-   No hook registry, no config object — snippets.js calls a handful of
-   plain functions (ProcessEvents, addMessage, redeemAlert, buildReplyBody)
-   that main.js is expected to define, exactly the same way ProcessEvents/
-   addMessage already worked before this reorganization.
-   ========================================================================= */
-
-
-/* ---------------------------------------------------------------------
-   EVENT PIPELINE
---------------------------------------------------------------------- */
 
 let counterEmotes = 0;
 let testmsg = null;
@@ -59,9 +16,6 @@ async function processEvent(obj, fData) {
 
   if (filterDuplicateActivity(type, event, obj, fData)) return;
 
-  // Widget-specific alert rendering (sub/tip/cheer/follow/raid) lives in
-  // main.js — this shared file only decides WHETHER an event should be
-  // processed, not HOW it looks.
   ProcessEvents(type, event);
 
   if (obj.detail.listener !== "message") return;
@@ -81,16 +35,10 @@ async function processEvent(obj, fData) {
 
   const tags = data.tags;
 
-  // Mutual: badge/tier/userType detection is identical mechanics for
-  // every widget. A widget that doesn't support a role this computes
-  // (e.g. no artist styling) just normalizes it away in its OWN
-  // addMessage() — see the comment there — instead of this file needing
-  // per-widget config.
   const role = resolveUserRole(tags, data.badges, data.nick);
-  userType = role.userType; // keep the legacy global in sync, some widgets' CSS/main.js may still read it
+  userType = role.userType;
   const { message, emoteOnly } = composeMessageText(data, role.specialclass);
 
-  // Individual: not every widget shows reply context, so main.js decides.
   const replyBody = buildReplyBody(tags);
   /*  await */ addMessage(
     fData, data.nick, username, role.badgesHtml, message, data.userId, data.msgId,
@@ -100,9 +48,6 @@ async function processEvent(obj, fData) {
   attachPronouns(data, fData);
 }
 
-// Test/preview buttons in the playground (or SE's test panel) dispatch a
-// synthetic 'widget-button' event; this maps each button to a fake
-// onEventReceived payload. Mutual across every widget.
 function handleTestButtonEvent(obj) {
   if (obj.detail.event.listener !== 'widget-button') return false;
   let emulated;
@@ -127,6 +72,9 @@ function handleTestButtonEvent(obj) {
       break;
     case "testgig":
       emulated = new CustomEvent("onEventReceived", testgig());
+      break;
+    case "testgiphy":
+      emulated = new CustomEvent("onEventReceived", testgiphy());
       break;
     case "testMessageVeryFirst":
       emulated = new CustomEvent("onEventReceived", testMessageVeryFirst(testmsg));
@@ -198,8 +146,6 @@ function handleDeleteEvents(obj) {
   return false;
 }
 
-// De-dupes events across widgets that share a session (fData.sharedEvents).
-// Returns true when processEvent() should stop entirely.
 function filterDuplicateActivity(type, event, obj, fData) {
   if (fData.sharedEvents) {
     try {
@@ -334,9 +280,6 @@ function resolveUserRole(tags, badgeList, nick) {
   return { userType: userTypeLocal, badgesHtml, subTierIndicator, specialclass, subIndicator, extraDecor };
 }
 
-// GIF tokens (Giphy etc, via data.tags.gifs) + emote lookup (msgDiv) +
-// @mention wrapping, in that order. Adding a NEW message-text feature
-// (another inline media type, say) goes here so it's shared everywhere.
 function composeMessageText(data, specialclass) {
   let gifs = parseGifs(data.tags?.gifs);
   let gifMap = {};
@@ -402,13 +345,6 @@ async function onChatLoad(fData) {
 }
 
 
-/* ---------------------------------------------------------------------
-   MESSAGE TEXT / EMOTES
-   The "MSG div" function — tokenizes text vs emotes, decides large-emote
-   sizing, and strips the invisible/hidden characters Twitch sometimes
-   sends (which is what broke gigantified-emote detection before). Fixes
-   to this logic belong here so they apply to every widget at once.
---------------------------------------------------------------------- */
 
 function msgDiv(message, spclass) {
   let text = html_encode(message.text);
@@ -480,10 +416,6 @@ function removeCheer(str) {
 }
 
 
-/* ---------------------------------------------------------------------
-   ANIMATION / QUEUE HELPERS
---------------------------------------------------------------------- */
-
 let ShowMessage;
 function ShowVert(el, usrT = "") {
   $(el).slideToggle(150);
@@ -541,11 +473,6 @@ function showMsgs(delay, delmsg, speedA, arrr) {
   }
 }
 
-
-/* ---------------------------------------------------------------------
-   BADGES (SVG injection)
---------------------------------------------------------------------- */
-
 function replaceBadges(badges, el) {
   if (badges != "" && fieldData.badgesDisplay) {
     $(el).find(".vip").html(`<svg class="svgbadge" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" version="1.1" id="svg902" viewBox="0 0 96 96">
@@ -579,11 +506,6 @@ function replaceBadges(badges, el) {
   `);
   }
 }
-
-
-/* ---------------------------------------------------------------------
-   PRONOUNS API
---------------------------------------------------------------------- */
 
 let pronounsCache = {};
 let pronounsbadge, pronounsObj = { pronouns: {} };
@@ -631,10 +553,6 @@ async function get(URL) {
 }
 
 
-/* ---------------------------------------------------------------------
-   EMOTES (7TV)
---------------------------------------------------------------------- */
-
 async function getEmotes() {
   try {
     const res = await get(`https://7tv.io/v3/users/twitch/${providerID}?timestamp=${new Date().getTime()}`);
@@ -663,10 +581,6 @@ async function getEmotes() {
 }
 
 
-/* ---------------------------------------------------------------------
-   SESSION LEADERBOARD (test helper)
---------------------------------------------------------------------- */
-
 function sessionTop2() {
   globalSeshdata["subscriber-alltime-gifter"]["name"] = genName();
   globalSeshdata["subscriber-alltime-gifter"]["name"] = "subscriber";
@@ -680,10 +594,6 @@ function testRedeem() {
   redeemAlert("milaeshop", "drink water", 50000);
 }
 
-
-/* ---------------------------------------------------------------------
-   TEST / FAKE EVENT GENERATORS (playground + SE test panel)
---------------------------------------------------------------------- */
 
 var nameList = [
   'Judah', 'Alejandro', 'Roberto', 'Fernando',
@@ -1190,6 +1100,54 @@ function testgig(testmsg) {
   };
 }
 
+function testgiphy() {
+  return {
+    detail: {
+      listener: "message",
+      event: {
+        data: {
+          tags: {
+            "badge-info": "subscriber/83",
+            badges: "broadcaster/1,subscriber/3000,no_audio/1",
+            color: "#B22222",
+            "display-name": "bloomerette",
+            emotes: "",
+            "first-msg": "0",
+            flags: "",
+            gifs: "0-43|52AbBj6Jn0kPKddsgj|https://media4.giphy.com/media/52AbBj6Jn0kPKddsgj/giphy.gif?cid=095d7a5dyihwgy8cbmlei0mr0gc1nlrb1uh9u2q31tfbnslh&ep=v1_gifs_trending&rid=giphy.gif&ct=g",
+            mod: "0",
+            "returning-chatter": "0",
+            "room-id": "120913552",
+            subscriber: "1",
+            turbo: "0",
+            "user-id": "120913552",
+            "user-type": ""
+          },
+          userId: "120913552",
+          displayName: "bloomerette",
+          nick: "bloomerette",
+          displayColor: "#B22222",
+          badges: [{
+            type: "broadcaster",
+            version: "1",
+            url: "https://static-cdn.jtvnw.net/badges/v1/5527c58c-fb7d-422d-b71b-f309dcb85cc1/3"
+          },
+          {
+            type: "subscriber",
+            version: "3000",
+            url: "https://static-cdn.jtvnw.net/badges/v1/d12a2e27-16f6-41d0-ab77-b780518f00a3/3",
+            description: "Subscriber"
+          }],
+          text: "[Grilling Hot Dog GIF by GIPHY Studios 2023]",
+          emotes: [],
+          msgId: `43285909-412c-4eee-b80d-83452ba${randNum()}7`
+        },
+        renderedText: "[Grilling Hot Dog GIF by GIPHY Studios 2023]"
+      }
+    }
+  };
+}
+
 function testMessageBot(testmsg) {
   return {
     detail: {
@@ -1333,6 +1291,7 @@ let queue = {
   high: [testhigh(), "msg"],
   pwr: [testpwr(), "msg"],
   gig: [testgig(), "msg"],
+  giphy: [testgiphy(), "msg"],
   veryFirst: [testMessageVeryFirst(), "msg"],
   newsub: [testSubEventNew(genName()), "event"],
   giftsub: [testSubEventGift(genName()), "event"],
