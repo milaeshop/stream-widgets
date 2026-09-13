@@ -815,7 +815,7 @@ function testMessageSub(testmsg) {
           badges: [{
             type: "subscriber",
             version: "1",
-            url: "https://static-cdn.jtvnw.net/badges/v1/d12a2e27-16f6-41d0-ab77-b780518f00a3/3",
+            url: "https://static-cdn.jtvnw.net/badges/v1/bf51cd37-097d-41a4-8915-40de1f245abe/2",
             description: "Verified"
           }],
           text: `${testmsg ? testmsg : "hey @moderator, I am a sub"}`,
@@ -849,7 +849,7 @@ function testMessageSubT2(testmsg) {
           badges: [{
             type: "subscriber",
             version: "2000",
-            url: "https://static-cdn.jtvnw.net/badges/v1/d12a2e27-16f6-41d0-ab77-b780518f00a3/3",
+            url: "https://static-cdn.jtvnw.net/badges/v1/bf51cd37-097d-41a4-8915-40de1f245abe/2",
             description: "Verified"
           }],
           text: `${testmsg ? testmsg : "hey @moderator, I am a Tier 2 sub"}`,
@@ -883,7 +883,7 @@ function testMessageSubT3(testmsg) {
           badges: [{
             type: "subscriber",
             version: "3000",
-            url: "https://static-cdn.jtvnw.net/badges/v1/d12a2e27-16f6-41d0-ab77-b780518f00a3/3",
+            url: "https://static-cdn.jtvnw.net/badges/v1/bf51cd37-097d-41a4-8915-40de1f245abe/2",
             description: "Verified"
           }],
           text: `${testmsg ? testmsg : "hey @moderator, I am a Tier 3 sub"}`,
