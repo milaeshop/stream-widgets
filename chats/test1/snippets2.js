@@ -75,6 +75,7 @@ async function processEvent(obj, fData) {
     }
   }
 
+  let extraDecor = "";
   const tags = data.tags;
 
   // Mutual: badge/tier/userType detection is identical mechanics for
@@ -90,6 +91,7 @@ async function processEvent(obj, fData) {
   // Individual: not every widget shows reply context, so main.js decides.
   const replyBody = buildReplyBody(tags);
 
+  console.log(2, extraDecor)
   /*  await */ addMessage(
     fData, data.nick, username, role.badgesHtml, message, data.userId, data.msgId,
     role.userType, emoteOnly, replyBody, role.subTierIndicator, extraDecor, role.specialclass
