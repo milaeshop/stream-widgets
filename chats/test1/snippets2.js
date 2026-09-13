@@ -1019,7 +1019,7 @@ function testMessageVip() {
           },
           {
             type: "subscriber",
-            version: "3000",
+            version: "1",
             url: "https://static-cdn.jtvnw.net/badges/v1/bf51cd37-097d-41a4-8915-40de1f245abe/2",
             description: "Subscriber"
           }],
