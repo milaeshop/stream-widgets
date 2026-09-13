@@ -75,7 +75,6 @@ async function processEvent(obj, fData) {
     }
   }
 
-  let extraDecor = "";
   const tags = data.tags;
 
   // Mutual: badge/tier/userType detection is identical mechanics for
