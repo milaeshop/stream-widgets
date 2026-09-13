@@ -88,7 +88,6 @@ async function processEvent(obj, fData) {
   // per-widget config.
   const role = resolveUserRole(tags, data.badges, data.nick);
   userType = role.userType; // keep the legacy global in sync, some widgets' CSS/main.js may still read it
-console.log(role)
   const { message, emoteOnly } = composeMessageText(data, role.specialclass);
 
   // Individual: not every widget shows reply context, so main.js decides.
