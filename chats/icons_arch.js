@@ -1,4 +1,15 @@
-   let IconStorage = {
+
+
+$("body").append(`<svg width="0" height="0" viewBox="0 0 35 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="vertgrad" x1="17.069" y1="0" x2="17.069" y2="30" gradientUnits="userSpaceOnUse">
+<stop stop-color="var(--grad1)"/>
+<stop offset="1" stop-color="var(--grad2)"/>
+</linearGradient>
+</defs>
+</svg>`)
+
+let IconStorage = {
      Heart: `<svg class="impicon" width="35" height="30" viewBox="0 0 35 30" xmlns="http://www.w3.org/2000/svg">
 <path d="M24.8309 0.00237548C21.5717 0.00237548 18.6998 1.77211 17.0702 4.55141C15.4406 1.77211 12.571 0.00237548 9.31187 0.00237548C4.19034 0.00237548 0 4.55141 0 10.11C0 18.6713 12.4499 27.356 16.0844 29.7077C16.3778 29.8981 16.72 29.9996 17.0698 30C17.4196 30.0004 17.7621 29.8997 18.056 29.7101C21.6929 27.3726 34.138 18.7401 34.138 10.1077C34.138 4.54904 29.95 0 24.8285 0" stroke="none"/>
 </svg>`,
